@@ -1,0 +1,81 @@
+diff -Nur --exclude=.idea paradox-1.4.3-orig/README.md paradox-1.4.3/README.md
+--- paradox-1.4.3-orig/README.md	1970-01-01 01:00:00.000000000 +0100
++++ paradox-1.4.3/README.md	2017-07-11 14:49:38.000000000 +0100
+@@ -0,0 +1,3 @@
++Fork of https://pecl.php.net/package/paradox
++
++This fixes issues with PHP5.6 and fixes the units tests
+diff -Nur --exclude=.idea paradox-1.4.3-orig/paradox.c paradox-1.4.3/paradox.c
+--- paradox-1.4.3-orig/paradox.c	2007-09-25 13:12:42.000000000 +0100
++++ paradox-1.4.3/paradox.c	2017-07-11 12:50:23.000000000 +0100
+@@ -48,7 +48,7 @@
+  *
+  * Every user visible function must have an entry in paradox_functions[].
+  */
+-function_entry paradox_functions[] = {
++zend_function_entry paradox_functions[] = {
+ 	PHP_FE(px_new, NULL)
+ 	PHP_FE(px_open_fp, NULL)
+ 	PHP_FE(px_create_fp, NULL)
+@@ -89,7 +89,7 @@
+ };
+ /* }}} */
+ 
+-function_entry paradox_funcs_db[] = {
++zend_function_entry paradox_funcs_db[] = {
+ 	PHP_ME_MAPPING(__construct, px_new, NULL, 0)
+ 	PHP_ME_MAPPING(open_fp, px_open_fp, NULL, 0)
+ 	PHP_ME_MAPPING(create_fp, px_create_fp, NULL, 0)
+@@ -283,8 +283,11 @@
+ 
+     ALLOC_HASHTABLE(intern->zo.properties);
+     zend_hash_init(intern->zo.properties, 0, NULL, ZVAL_PTR_DTOR, 0);
++#if PHP_VERSION_ID < 50399
+     zend_hash_copy(intern->zo.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
+-
++#else
++object_properties_init((zend_object*) &(intern->zo), class_type);
++#endif
+ 	intern->ptr = PX_new2(px_custom_errorhandler, px_emalloc, px_erealloc, px_efree);
+     retval->handle = zend_objects_store_put(intern, paradox_object_dtor, NULL, NULL TSRMLS_CC);
+     retval->handlers = handlers;
+diff -Nur --exclude=.idea paradox-1.4.3-orig/tests/001.phpt paradox-1.4.3/tests/001.phpt
+--- paradox-1.4.3-orig/tests/001.phpt	2006-02-10 10:22:33.000000000 +0000
++++ paradox-1.4.3/tests/001.phpt	2017-07-11 14:41:32.000000000 +0100
+@@ -6,7 +6,7 @@
+ --GET--
+ --INI--
+ --FILE--
+-<?php 
++<?php
+ $dirname = dirname($_SERVER["SCRIPT_FILENAME"]);
+ $pxdoc = px_new();
+ $fp = fopen($dirname."/simpletest.db", "r");
+@@ -28,6 +28,7 @@
+     [numrecords] => 1
+     [numfields] => 1
+     [headersize] => 2048
++    [recordsize] => 2
+     [maxtablesize] => 2
+     [numdatablocks] => 1
+     [numindexfields] => 0
+diff -Nur --exclude=.idea paradox-1.4.3-orig/tests/010.phpt paradox-1.4.3/tests/010.phpt
+--- paradox-1.4.3-orig/tests/010.phpt	2006-02-13 19:26:45.000000000 +0000
++++ paradox-1.4.3/tests/010.phpt	2017-07-11 14:43:03.000000000 +0100
+@@ -6,7 +6,7 @@
+ --GET--
+ --INI--
+ --FILE--
+-<?php 
++<?php
+ $dirname = dirname($_SERVER["SCRIPT_FILENAME"]);
+ $fp = fopen($dirname."/simpletest.db", "r");
+ $pxdoc = new paradox_db();
+@@ -23,6 +23,7 @@
+     [numrecords] => 1
+     [numfields] => 1
+     [headersize] => 2048
++    [recordsize] => 2
+     [maxtablesize] => 2
+     [numdatablocks] => 1
+     [numindexfields] => 0
