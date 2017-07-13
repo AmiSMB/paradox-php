@@ -32,15 +32,16 @@ if($pdx)
       $pdx->getRecord($record);
       foreach($schema as $fieldName => $fieldDetails)
       {
-        echo "\t" . $fieldName . " " . $pdx->getFieldValue(
-            $fieldName
-          ) . PHP_EOL;
+        echo "\t" . $fieldName . " "
+          . $pdx->getFieldValue($fieldName)
+          . PHP_EOL;
       }
       echo PHP_EOL;
     }
   }
 
-  $pdx->select('PRAC_COMPET_ID, MEETING_ID')->where('MEETING_ID', '=', '3')
+  $pdx->select('PRAC_COMPET_ID, MEETING_ID')
+    ->where(['MEETING_ID', '=', '3'])
     ->limit(10);
   $results = $pdx->get();
   var_dump($results);
