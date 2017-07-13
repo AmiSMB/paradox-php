@@ -371,14 +371,12 @@ class Paradox
   /**
    * Select which fields to return
    *
-   * @param array $selectedFields
+   * @param array|string $selectedFields
    *
    * @return Paradox
    */
   public function select($selectedFields)
   {
-    $args = func_get_args();
-
     // Was an array of fields supplied?
     if(is_array($selectedFields))
     {
@@ -422,21 +420,19 @@ class Paradox
   {
     if(is_array($args))
     {
-      foreach($args as $where)
-      {
         $this->_where[] = [
-          'field'    => $where[0],
-          'operator' => $where[1],
-          'value'    => $where[2],
+          'field'    => $args[0],
+          'operator' => $args[1],
+          'value'    => $args[2],
         ];
-      }
     }
     else if(is_string($args))
     {
+      $parts = explode(',',$args);
       $this->_where[] = [
-        'field'    => $args[0],
-        'operator' => $args[1],
-        'value'    => $args[2],
+        'field'    => $parts[0],
+        'operator' => $parts[1],
+        'value'    => $parts[2],
       ];
     }
 
