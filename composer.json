@@ -1,5 +1,5 @@
 {
-  "name": "bbk_reader",
+  "name": "AmiSMB/paradox-php",
   "description": "Reads paradox database files and allows select query against them",
   "homepage": "http://github.com",
   "licence": "BSD-3-Clause",
@@ -7,7 +7,6 @@
     "jlawrence/eos": "3.*"
   },
   "require-dev":{
-
   },
   "autoload": {
     "psr-4": {
